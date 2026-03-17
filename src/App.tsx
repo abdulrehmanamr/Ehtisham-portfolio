@@ -3,44 +3,58 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+import React, { Suspense, lazy, useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { SiteProvider } from './context/SiteContext';
 
-// Pages (to be created)
-import Home from './pages/Home';
-import About from './pages/About';
-import Projects from './pages/Projects';
-import Services from './pages/Services';
-import Contact from './pages/Contact';
+// Lazy load pages
+const Home = lazy(() => import('./pages/Home'));
+const About = lazy(() => import('./pages/About'));
+const Projects = lazy(() => import('./pages/Projects'));
+const Services = lazy(() => import('./pages/Services'));
+const Contact = lazy(() => import('./pages/Contact'));
 
-// Admin (to be created)
-import AdminLayout from './admin/AdminLayout';
-import AdminDashboard from './admin/Dashboard';
-import AdminProjects from './admin/Projects';
-import AdminServices from './admin/Services';
-import AdminSiteConfig from './admin/SiteConfig';
-import AdminMessages from './admin/Messages';
-import AdminInsights from './admin/Insights';
-import AdminTestimonials from './admin/Testimonials';
-import AdminUsers from './admin/Users';
-import AdminLogin from './admin/Login';
+// Lazy load admin components
+const AdminLayout = lazy(() => import('./admin/AdminLayout'));
+const AdminDashboard = lazy(() => import('./admin/Dashboard'));
+const AdminProjects = lazy(() => import('./admin/Projects'));
+const AdminServices = lazy(() => import('./admin/Services'));
+const AdminSiteConfig = lazy(() => import('./admin/SiteConfig'));
+const AdminMessages = lazy(() => import('./admin/Messages'));
+const AdminInsights = lazy(() => import('./admin/Insights'));
+const AdminTestimonials = lazy(() => import('./admin/Testimonials'));
+const AdminUsers = lazy(() => import('./admin/Users'));
+const AdminLogin = lazy(() => import('./admin/Login'));
+
 import { useSite } from './context/SiteContext';
-
 import { AnimatePresence, motion } from 'motion/react';
 
 const SiteLoadingWrapper = ({ children }: { children: React.ReactNode }) => {
   const { loading } = useSite();
+  const [showLoader, setShowLoader] = useState(false);
+
+  useEffect(() => {
+    let timer: NodeJS.Timeout;
+    if (loading) {
+      // Small delay to avoid flickering on fast connections
+      timer = setTimeout(() => setShowLoader(true), 200);
+    } else {
+      setShowLoader(false);
+    }
+    return () => clearTimeout(timer);
+  }, [loading]);
   
   return (
     <AnimatePresence mode="wait">
-      {loading ? (
+      {loading && showLoader ? (
         <motion.div 
           key="loader"
           initial={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          transition={{ duration: 0.5 }}
+          transition={{ duration: 0.3, ease: "easeInOut" }}
           className="fixed inset-0 z-[9999] flex items-center justify-center bg-black"
+          style={{ willChange: "opacity" }}
         >
           <div className="flex flex-col items-center gap-6">
             <div className="relative">
@@ -58,7 +72,8 @@ const SiteLoadingWrapper = ({ children }: { children: React.ReactNode }) => {
           key="content"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ duration: 0.5 }}
+          transition={{ duration: 0.4, ease: "easeOut" }}
+          style={{ willChange: "opacity" }}
         >
           {children}
         </motion.div>
@@ -82,36 +97,40 @@ export default function App() {
       <SiteProvider>
         <Router>
           <SiteLoadingWrapper>
-            <Routes>
-              {/* Public Routes */}
-              <Route path="/" element={<Home />} />
-              <Route path="/about" element={<About />} />
-              <Route path="/projects" element={<Projects />} />
-              <Route path="/services" element={<Services />} />
-              <Route path="/contact" element={<Contact />} />
+            <Suspense fallback={null}>
+              <Routes>
+                {/* Public Routes */}
+                <Route path="/" element={<Home />} />
+                <Route path="/about" element={<About />} />
+                <Route path="/projects" element={<Projects />} />
+                <Route path="/services" element={<Services />} />
+                <Route path="/contact" element={<Contact />} />
 
-              {/* Admin Routes */}
-              <Route path="/admin/login" element={<AdminLogin />} />
-              <Route
-                path="/admin/*"
-                element={
-                  <ProtectedRoute>
-                    <AdminLayout>
-                      <Routes>
-                        <Route path="/" element={<AdminDashboard />} />
-                        <Route path="/projects" element={<AdminProjects />} />
-                        <Route path="/services" element={<AdminServices />} />
-                        <Route path="/config" element={<AdminSiteConfig />} />
-                        <Route path="/messages" element={<AdminMessages />} />
-                        <Route path="/insights" element={<AdminInsights />} />
-                        <Route path="/users" element={<AdminUsers />} />
-                        <Route path="/testimonials" element={<AdminTestimonials />} />
-                      </Routes>
-                    </AdminLayout>
-                  </ProtectedRoute>
-                }
-              />
-            </Routes>
+                {/* Admin Routes */}
+                <Route path="/admin/login" element={<AdminLogin />} />
+                <Route
+                  path="/admin/*"
+                  element={
+                    <ProtectedRoute>
+                      <AdminLayout>
+                        <Suspense fallback={<div className="h-full w-full flex items-center justify-center bg-zinc-950 text-white">Loading Admin...</div>}>
+                          <Routes>
+                            <Route path="/" element={<AdminDashboard />} />
+                            <Route path="/projects" element={<AdminProjects />} />
+                            <Route path="/services" element={<AdminServices />} />
+                            <Route path="/config" element={<AdminSiteConfig />} />
+                            <Route path="/messages" element={<AdminMessages />} />
+                            <Route path="/insights" element={<AdminInsights />} />
+                            <Route path="/users" element={<AdminUsers />} />
+                            <Route path="/testimonials" element={<AdminTestimonials />} />
+                          </Routes>
+                        </Suspense>
+                      </AdminLayout>
+                    </ProtectedRoute>
+                  }
+                />
+              </Routes>
+            </Suspense>
           </SiteLoadingWrapper>
         </Router>
       </SiteProvider>

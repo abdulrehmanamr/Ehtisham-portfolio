@@ -164,6 +164,8 @@ const Home = () => {
                           <img
                             src={config?.profileImage || 'https://picsum.photos/seed/ehtisham/800/800'}
                             alt="Ehtisham Arshad"
+                            // @ts-ignore
+                            fetchpriority="high"
                             className="w-full h-full object-cover transition-transform duration-500"
                             style={{ 
                               transform: `scale(${window.innerWidth < 768 ? config?.theme?.sizes?.mobileImageScale || 1 : config?.theme?.sizes?.imageScale || 1})` 
@@ -422,11 +424,16 @@ const Home = () => {
                         </motion.div>
                       ))
                     ) : (
-                      [1, 2, 3].map((_, i) => (
-                        <div key={i} className="animate-pulse">
-                          <div className="aspect-video bg-zinc-900 rounded-[32px] mb-6" />
-                          <div className="h-6 bg-zinc-900 rounded w-3/4 mb-2" />
-                          <div className="h-4 bg-zinc-900 rounded w-1/2" />
+                      [1, 2, 3, 4, 5, 6].map((_, i) => (
+                        <div key={i} className="space-y-4">
+                          <div className="aspect-video bg-zinc-900/50 rounded-[32px] animate-pulse border border-white/5" />
+                          <div className="space-y-2">
+                            <div className="h-6 bg-zinc-900/50 rounded-lg w-3/4 animate-pulse" />
+                            <div className="flex gap-2">
+                              <div className="h-4 bg-zinc-900/50 rounded-md w-16 animate-pulse" />
+                              <div className="h-4 bg-zinc-900/50 rounded-md w-16 animate-pulse" />
+                            </div>
+                          </div>
                         </div>
                       ))
                     )}

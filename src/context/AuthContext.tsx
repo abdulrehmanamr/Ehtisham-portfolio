@@ -30,7 +30,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             getDoc(doc(db, 'users', user.uid))
           ]);
           
-          const isBootstrapAdmin = user.email === 'abdulrehmanamr06@gmail.com';
+          const isBootstrapAdmin = user.email === 'abdulrehmanamr06@gmail.com' || user.email === 'ehtishamarshad@gmail.com';
           const hasAdminRole = userDoc.exists() && userDoc.data()?.role === 'admin';
           const isAdminInAdmins = adminDocByUid.exists() || (adminDocByEmail && adminDocByEmail.exists());
           
@@ -40,7 +40,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             handleFirestoreError(error, OperationType.GET, 'admins/users');
           }
           console.error("Error checking admin status:", error);
-          setIsAdmin(user.email === 'abdulrehmanamr06@gmail.com');
+          setIsAdmin(user.email === 'abdulrehmanamr06@gmail.com' || user.email === 'ehtishamarshad@gmail.com');
         }
       } else {
         setIsAdmin(false);

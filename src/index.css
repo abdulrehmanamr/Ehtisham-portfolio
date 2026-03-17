@@ -1,8 +1,17 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 @import "tailwindcss";
 
 @layer base {
+  :root {
+    --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  }
+
   html {
     font-size: var(--mobile-base-font-size);
+    font-family: var(--font-sans);
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
   @media (min-width: 768px) {
     html {
@@ -11,8 +20,20 @@
   }
 }
 
+/* Performance optimizations */
+section {
+  content-visibility: auto;
+  contain-intrinsic-size: 1px 500px;
+}
+
+/* Hero section should always be visible immediately */
+section:first-of-type {
+  content-visibility: visible;
+}
+
 .hero-title {
   font-size: var(--mobile-hero-title-size);
+  text-wrap: balance;
 }
 @media (min-width: 768px) {
   .hero-title {
@@ -22,6 +43,7 @@
 
 .section-title {
   font-size: var(--mobile-section-title-size);
+  text-wrap: balance;
 }
 @media (min-width: 768px) {
   .section-title {
@@ -31,6 +53,7 @@
 
 .image-scale {
   transform: scale(var(--mobile-image-scale));
+  will-change: transform;
 }
 @media (min-width: 768px) {
   .image-scale {
@@ -40,4 +63,24 @@
 
 .about-image-scale {
   transform: scale(var(--about-image-scale));
+  will-change: transform;
+}
+
+/* Custom scrollbar for better performance and look */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #000;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #18181b;
+  border-radius: 10px;
+  border: 2px solid #000;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #27272a;
 }

@@ -11,6 +11,7 @@ const AdminLogin = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isEmailLogin, setIsEmailLogin] = useState(false);
+  const [isRegistering, setIsRegistering] = useState(false);
   const [loginLoading, setLoginLoading] = useState(false);
   const navigate = useNavigate();
 
@@ -34,8 +35,13 @@ const AdminLogin = () => {
     try {
       setError('');
       setLoginLoading(true);
-      const { signInWithEmailAndPassword } = await import('firebase/auth');
-      await signInWithEmailAndPassword(auth, email, password);
+      const { signInWithEmailAndPassword, createUserWithEmailAndPassword } = await import('firebase/auth');
+      
+      if (isRegistering) {
+        await createUserWithEmailAndPassword(auth, email, password);
+      } else {
+        await signInWithEmailAndPassword(auth, email, password);
+      }
     } catch (err: any) {
       setError(err.message);
     } finally {
@@ -89,15 +95,27 @@ const AdminLogin = () => {
               type="submit"
               className="w-full py-4 bg-violet-600 text-white font-bold rounded-2xl hover:bg-violet-700 transition-all flex items-center justify-center gap-3 shadow-xl disabled:opacity-50"
             >
-              {loginLoading ? 'Signing in...' : 'Sign in with Email'}
+              {loginLoading ? 'Processing...' : isRegistering ? 'Register Admin' : 'Sign in with Email'}
             </button>
-            <button
-              type="button"
-              onClick={() => setIsEmailLogin(false)}
-              className="text-zinc-500 text-sm hover:text-white transition-colors"
-            >
-              Back to Google Login
-            </button>
+            <div className="flex flex-col gap-2">
+              <button
+                type="button"
+                onClick={() => setIsRegistering(!isRegistering)}
+                className="text-violet-400 text-xs hover:text-violet-300 transition-colors"
+              >
+                {isRegistering ? 'Already have an account? Sign in' : 'Need to create an admin account? Register'}
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setIsEmailLogin(false);
+                  setIsRegistering(false);
+                }}
+                className="text-zinc-500 text-sm hover:text-white transition-colors"
+              >
+                Back to Google Login
+              </button>
+            </div>
           </form>
         ) : (
           <div className="space-y-4">
