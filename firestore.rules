@@ -10,7 +10,9 @@ service cloud.firestore {
 
     function isAdmin() {
       return isAuthenticated() && (
-        exists(/databases/$(database)/documents/admins/$(request.auth.uid)) && get(/databases/$(database)/documents/admins/$(request.auth.uid)).data.role == 'admin' ||
+        exists(/databases/$(database)/documents/admins/$(request.auth.uid)) ||
+        exists(/databases/$(database)/documents/admins/$(request.auth.token.email)) ||
+        (exists(/databases/$(database)/documents/users/$(request.auth.uid)) && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin') ||
         request.auth.token.email == "abdulrehmanamr06@gmail.com"
       );
     }
@@ -58,8 +60,15 @@ service cloud.firestore {
 
     // Admins
     match /admins/{adminId} {
-      allow read: if isAuthenticated() && (request.auth.uid == adminId || isAdmin());
+      allow read: if isAuthenticated() && (request.auth.uid == adminId || request.auth.token.email == adminId || isAdmin());
       allow write: if isAdmin();
+    }
+
+    // Users
+    match /users/{userId} {
+      allow read: if isAuthenticated() && (request.auth.uid == userId || isAdmin());
+      allow write: if isAdmin() || (isAuthenticated() && request.auth.uid == userId && !request.resource.data.diff(resource.data).affectedKeys().hasAny(['role']));
+      allow create: if isAuthenticated() && request.auth.uid == userId;
     }
   }
 }

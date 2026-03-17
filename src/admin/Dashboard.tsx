@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { collection, getDocs, query, where, limit, orderBy } from 'firebase/firestore';
 import { db } from '../firebase';
+import { handleFirestoreError, OperationType } from '../utils/errorHandlers';
 import { Project, Message, Service } from '../types';
 import { FolderKanban, MessageSquare, Briefcase, Eye, TrendingUp, Clock, Settings } from 'lucide-react';
 import { format } from 'date-fns';
@@ -33,7 +34,10 @@ const Dashboard = () => {
         const q = query(collection(db, 'messages'), orderBy('createdAt', 'desc'), limit(5));
         const recentSnap = await getDocs(q);
         setRecentMessages(recentSnap.docs.map(doc => ({ id: doc.id, ...doc.data() } as Message)));
-      } catch (error) {
+      } catch (error: any) {
+        if (error?.message?.includes('permission')) {
+          handleFirestoreError(error, OperationType.LIST, 'dashboard_data');
+        }
         console.error("Error fetching dashboard stats:", error);
       } finally {
         setLoading(false);

@@ -23,18 +23,48 @@ import AdminSiteConfig from './admin/SiteConfig';
 import AdminMessages from './admin/Messages';
 import AdminInsights from './admin/Insights';
 import AdminTestimonials from './admin/Testimonials';
+import AdminUsers from './admin/Users';
 import AdminLogin from './admin/Login';
 import { useSite } from './context/SiteContext';
 
+import { AnimatePresence, motion } from 'motion/react';
+
 const SiteLoadingWrapper = ({ children }: { children: React.ReactNode }) => {
   const { loading } = useSite();
-  if (loading) return <div className="h-screen w-screen flex items-center justify-center bg-black text-white">
-    <div className="flex flex-col items-center gap-4">
-      <div className="w-12 h-12 border-4 border-violet-600 border-t-transparent rounded-full animate-spin" />
-      <p className="text-zinc-400 font-medium animate-pulse">Loading Experience...</p>
-    </div>
-  </div>;
-  return <>{children}</>;
+  
+  return (
+    <AnimatePresence mode="wait">
+      {loading ? (
+        <motion.div 
+          key="loader"
+          initial={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.5 }}
+          className="fixed inset-0 z-[9999] flex items-center justify-center bg-black"
+        >
+          <div className="flex flex-col items-center gap-6">
+            <div className="relative">
+              <div className="w-16 h-16 border-2 border-white/5 rounded-full" />
+              <div className="absolute inset-0 w-16 h-16 border-t-2 border-violet-500 rounded-full animate-spin" />
+            </div>
+            <div className="text-center">
+              <p className="text-white font-bold tracking-[0.2em] uppercase text-xs mb-2">Ehtisham Arshad</p>
+              <p className="text-zinc-500 text-[10px] uppercase tracking-widest animate-pulse">Loading Experience</p>
+            </div>
+          </div>
+        </motion.div>
+      ) : (
+        <motion.div
+          key="content"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.5 }}
+        >
+          {children}
+        </motion.div>
+      )}
+    </AnimatePresence>
+  );
 };
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
@@ -74,6 +104,7 @@ export default function App() {
                         <Route path="/config" element={<AdminSiteConfig />} />
                         <Route path="/messages" element={<AdminMessages />} />
                         <Route path="/insights" element={<AdminInsights />} />
+                        <Route path="/users" element={<AdminUsers />} />
                         <Route path="/testimonials" element={<AdminTestimonials />} />
                       </Routes>
                     </AdminLayout>

@@ -15,6 +15,7 @@ const AdminLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const menuItems = [
     { name: 'Dashboard', path: '/admin', icon: <LayoutDashboard size={20} /> },
     { name: 'Insights', path: '/admin/insights', icon: <BarChart3 size={20} /> },
+    { name: 'Users', path: '/admin/users', icon: <User size={20} /> },
     { name: 'Site Config', path: '/admin/config', icon: <Settings size={20} /> },
   ];
 
