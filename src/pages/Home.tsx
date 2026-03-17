@@ -37,23 +37,27 @@ const Home = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      // Fetch featured projects
-      const projectsQuery = query(
-        collection(db, 'projects'),
-        where('featured', '==', true),
-        limit(6)
-      );
-      const projectsSnap = await getDocs(projectsQuery);
-      setFeaturedProjects(projectsSnap.docs.map(doc => ({ id: doc.id, ...doc.data() } as Project)));
+      try {
+        const projectsQuery = query(
+          collection(db, 'projects'),
+          where('featured', '==', true),
+          limit(6)
+        );
 
-      // Fetch testimonials
-      const testimonialsSnap = await getDocs(collection(db, 'testimonials'));
-      setTestimonials(testimonialsSnap.docs.map(doc => ({ id: doc.id, ...doc.data() } as Testimonial)));
+        const servicesQuery = query(collection(db, 'services'), orderBy('order', 'asc'), limit(3));
 
-      // Fetch services
-      const servicesQuery = query(collection(db, 'services'), orderBy('order', 'asc'), limit(3));
-      const servicesSnap = await getDocs(servicesQuery);
-      setServices(servicesSnap.docs.map(doc => ({ id: doc.id, ...doc.data() } as Service)));
+        const [projectsSnap, testimonialsSnap, servicesSnap] = await Promise.all([
+          getDocs(projectsQuery),
+          getDocs(collection(db, 'testimonials')),
+          getDocs(servicesQuery)
+        ]);
+
+        setFeaturedProjects(projectsSnap.docs.map(doc => ({ id: doc.id, ...doc.data() } as Project)));
+        setTestimonials(testimonialsSnap.docs.map(doc => ({ id: doc.id, ...doc.data() } as Testimonial)));
+        setServices(servicesSnap.docs.map(doc => ({ id: doc.id, ...doc.data() } as Service)));
+      } catch (error) {
+        console.error("Error fetching home data:", error);
+      }
     };
 
     fetchData();
@@ -352,7 +356,7 @@ const Home = () => {
                         transition={{ delay: i * 0.1 }}
                         className="p-4 md:p-8 bg-zinc-900 border border-white/5 rounded-[24px] md:rounded-[32px] flex flex-col items-center text-center group hover:border-violet-500/30 transition-all"
                       >
-                        <img src={skill.icon} alt={skill.name} className="w-10 h-10 md:w-16 md:h-16 mb-4 md:mb-6 transition-all duration-500" />
+                        <img src={skill.icon} alt={skill.name} loading="lazy" className="w-10 h-10 md:w-16 md:h-16 mb-4 md:mb-6 transition-all duration-500" />
                         <h3 className="text-sm md:text-xl font-bold mb-1 md:mb-2">{skill.name}</h3>
                       </motion.div>
                     ))}
@@ -472,7 +476,7 @@ const Home = () => {
                           </div>
                           <p className="text-zinc-300 italic mb-8 leading-relaxed">"{t.content}"</p>
                           <div className="flex items-center gap-4">
-                            <img src={t.avatarUrl || `https://api.dicebear.com/7.x/avataaars/svg?seed=${t.name}`} alt={t.name} className="w-12 h-12 rounded-full border border-white/10" />
+                            <img src={t.avatarUrl || `https://api.dicebear.com/7.x/avataaars/svg?seed=${t.name}`} alt={t.name} loading="lazy" className="w-12 h-12 rounded-full border border-white/10" />
                             <div>
                               <h4 className="font-bold text-white">{t.name}</h4>
                               <p className="text-xs text-zinc-500">{t.role}</p>

@@ -13,25 +13,31 @@ const Dashboard = () => {
 
   useEffect(() => {
     const fetchStats = async () => {
-      const projectsSnap = await getDocs(collection(db, 'projects'));
-      const messagesSnap = await getDocs(collection(db, 'messages'));
-      const servicesSnap = await getDocs(collection(db, 'services'));
+      try {
+        const [projectsSnap, messagesSnap, servicesSnap] = await Promise.all([
+          getDocs(collection(db, 'projects')),
+          getDocs(collection(db, 'messages')),
+          getDocs(collection(db, 'services'))
+        ]);
 
-      const unreadCount = messagesSnap.docs.filter(doc => !doc.data().read).length;
+        const unreadCount = messagesSnap.docs.filter(doc => !doc.data().read).length;
 
-      setStats({
-        projects: projectsSnap.size,
-        messages: messagesSnap.size,
-        services: servicesSnap.size,
-        unreadMessages: unreadCount
-      });
+        setStats({
+          projects: projectsSnap.size,
+          messages: messagesSnap.size,
+          services: servicesSnap.size,
+          unreadMessages: unreadCount
+        });
 
-      // Fetch recent messages
-      const q = query(collection(db, 'messages'), orderBy('createdAt', 'desc'), limit(5));
-      const recentSnap = await getDocs(q);
-      setRecentMessages(recentSnap.docs.map(doc => ({ id: doc.id, ...doc.data() } as Message)));
-
-      setLoading(false);
+        // Fetch recent messages
+        const q = query(collection(db, 'messages'), orderBy('createdAt', 'desc'), limit(5));
+        const recentSnap = await getDocs(q);
+        setRecentMessages(recentSnap.docs.map(doc => ({ id: doc.id, ...doc.data() } as Message)));
+      } catch (error) {
+        console.error("Error fetching dashboard stats:", error);
+      } finally {
+        setLoading(false);
+      }
     };
 
     fetchStats();
