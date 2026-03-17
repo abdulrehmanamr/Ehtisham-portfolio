@@ -1,0 +1,43 @@
+@import "tailwindcss";
+
+@layer base {
+  html {
+    font-size: var(--mobile-base-font-size);
+  }
+  @media (min-width: 768px) {
+    html {
+      font-size: var(--base-font-size);
+    }
+  }
+}
+
+.hero-title {
+  font-size: var(--mobile-hero-title-size);
+}
+@media (min-width: 768px) {
+  .hero-title {
+    font-size: var(--hero-title-size);
+  }
+}
+
+.section-title {
+  font-size: var(--mobile-section-title-size);
+}
+@media (min-width: 768px) {
+  .section-title {
+    font-size: var(--section-title-size);
+  }
+}
+
+.image-scale {
+  transform: scale(var(--mobile-image-scale));
+}
+@media (min-width: 768px) {
+  .image-scale {
+    transform: scale(var(--image-scale));
+  }
+}
+
+.about-image-scale {
+  transform: scale(var(--about-image-scale));
+}

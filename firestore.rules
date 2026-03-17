@@ -1,0 +1,65 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // ===============================================================
+    // Helper Functions
+    // ===============================================================
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isAdmin() {
+      return isAuthenticated() && (
+        exists(/databases/$(database)/documents/admins/$(request.auth.uid)) && get(/databases/$(database)/documents/admins/$(request.auth.uid)).data.role == 'admin' ||
+        request.auth.token.email == "abdulrehmanamr06@gmail.com"
+      );
+    }
+
+    function isValidMessage(data) {
+      return data.keys().hasAll(['name', 'email', 'message']) &&
+             data.name is string && data.name.size() > 0 && data.name.size() < 100 &&
+             data.email is string && data.email.matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$") &&
+             data.message is string && data.message.size() > 0 && data.message.size() < 2000;
+    }
+
+    // ===============================================================
+    // Rules
+    // ===============================================================
+
+    // Site Config
+    match /config/site {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // Projects
+    match /projects/{projectId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // Services
+    match /services/{serviceId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // Testimonials
+    match /testimonials/{testimonialId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // Messages
+    match /messages/{messageId} {
+      allow create: if isValidMessage(request.resource.data);
+      allow read, update, delete: if isAdmin();
+    }
+
+    // Admins
+    match /admins/{adminId} {
+      allow read: if isAuthenticated() && (request.auth.uid == adminId || isAdmin());
+      allow write: if isAdmin();
+    }
+  }
+}
