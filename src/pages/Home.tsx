@@ -165,7 +165,7 @@ const Home = () => {
                             src={config?.profileImage || 'https://picsum.photos/seed/ehtisham/800/800'}
                             alt="Ehtisham Arshad"
                             // @ts-ignore
-                            fetchpriority="high"
+                            fetchPriority="high"
                             className="w-full h-full object-cover transition-transform duration-500"
                             style={{ 
                               transform: `scale(${window.innerWidth < 768 ? config?.theme?.sizes?.mobileImageScale || 1 : config?.theme?.sizes?.imageScale || 1})` 
