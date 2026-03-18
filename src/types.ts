@@ -1,3 +1,16 @@
+export interface SEOConfig {
+  title: string;
+  description: string;
+  keywords: string;
+  ogImage?: string;
+  pages: {
+    [key: string]: {
+      title: string;
+      description: string;
+    }
+  };
+}
+
 export interface SiteConfig {
   name: string;
   title: string;
@@ -8,6 +21,7 @@ export interface SiteConfig {
   profileImage: string;
   aboutImage?: string;
   logoUrl?: string;
+  seo?: SEOConfig;
   socialLinks: {
     behance?: string;
     whatsapp?: string;

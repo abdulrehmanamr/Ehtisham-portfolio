@@ -1,6 +1,7 @@
 import React from 'react';
 import Navbar from './Navbar';
 import Footer from './Footer';
+import SEO from './SEO';
 import { motion } from 'motion/react';
 import { useSite } from '../context/SiteContext';
 
@@ -24,6 +25,7 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
         '--about-image-scale': sizes?.aboutImageScale || 0.5,
       }}
     >
+      <SEO />
       <Navbar />
       <motion.main
         initial={{ opacity: 0 }}

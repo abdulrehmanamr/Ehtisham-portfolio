@@ -25,6 +25,7 @@ const AdminMessages = lazy(() => import('./admin/Messages'));
 const AdminInsights = lazy(() => import('./admin/Insights'));
 const AdminTestimonials = lazy(() => import('./admin/Testimonials'));
 const AdminUsers = lazy(() => import('./admin/Users'));
+const AdminSEO = lazy(() => import('./admin/SEOConfig'));
 const AdminLogin = lazy(() => import('./admin/Login'));
 
 import { useSite } from './context/SiteContext';
@@ -122,6 +123,7 @@ export default function App() {
                             <Route path="/messages" element={<AdminMessages />} />
                             <Route path="/insights" element={<AdminInsights />} />
                             <Route path="/users" element={<AdminUsers />} />
+                            <Route path="/seo" element={<AdminSEO />} />
                             <Route path="/testimonials" element={<AdminTestimonials />} />
                           </Routes>
                         </Suspense>

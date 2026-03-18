@@ -25,6 +25,18 @@ const defaultConfig: SiteConfig = {
   profileImage: 'https://picsum.photos/seed/ehtisham/400/400',
   aboutImage: 'https://picsum.photos/seed/ehtisham/800/1000',
   logoUrl: '',
+  seo: {
+    title: 'Ehtisham Arshad | Professional Thumbnail Designer',
+    description: 'Expert thumbnail designer helping YouTubers and creators boost their CTR and views with high-impact, viral designs.',
+    keywords: 'thumbnail designer, youtube thumbnails, graphic design, CTR optimization, viral thumbnails',
+    pages: {
+      home: { title: 'Home', description: 'Welcome to Ehtisham Arshad Portfolio' },
+      about: { title: 'About Me', description: 'Learn more about my journey and expertise' },
+      projects: { title: 'Portfolio', description: 'Explore my best thumbnail designs' },
+      services: { title: 'Services', description: 'Professional design services for creators' },
+      contact: { title: 'Contact', description: 'Get in touch for your next project' }
+    }
+  },
   socialLinks: {
     behance: 'https://www.behance.net/ehtishamarshad22/projects',
     whatsapp: '',
