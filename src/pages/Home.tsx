@@ -17,6 +17,7 @@ const Home = () => {
   const [services, setServices] = useState<Service[]>([]);
   const [formData, setFormData] = useState({ name: '', email: '', subject: '', message: '' });
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
+  const [showAllTestimonials, setShowAllTestimonials] = useState(false);
 
   const handleContactSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -460,7 +461,7 @@ const Home = () => {
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
                     {(config?.testimonials || []).length > 0 ? (
-                      (config?.testimonials || []).map((t, i) => (
+                      (showAllTestimonials ? (config?.testimonials || []) : (config?.testimonials || []).slice(0, 3)).map((t, i) => (
                         <motion.div
                           key={t.id}
                           initial={{ opacity: 0, scale: 0.9 }}
@@ -497,6 +498,18 @@ const Home = () => {
                       </div>
                     )}
                   </div>
+
+                  {(config?.testimonials || []).length > 3 && (
+                    <div className="text-center mt-12">
+                      <button 
+                        onClick={() => setShowAllTestimonials(!showAllTestimonials)}
+                        className="px-8 py-4 bg-zinc-900 text-white font-bold rounded-2xl border border-white/5 hover:bg-zinc-800 transition-all inline-flex items-center gap-2 group"
+                      >
+                        {showAllTestimonials ? 'Show Less' : 'Show More Reviews'}
+                        <ArrowRight size={18} className={cn("transition-transform", showAllTestimonials ? "-rotate-90" : "rotate-90 group-hover:translate-y-1")} />
+                      </button>
+                    </div>
+                  )}
                 </div>
               </section>
             );
