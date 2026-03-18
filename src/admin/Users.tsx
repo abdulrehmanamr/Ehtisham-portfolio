@@ -3,6 +3,7 @@ import { collection, getDocs, doc, setDoc, deleteDoc, query, orderBy } from 'fir
 import { db } from '../firebase';
 import { UserPlus, Trash2, Shield, Mail, AlertCircle, CheckCircle2 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import DeleteModal from '../components/DeleteModal';
 
 interface AdminUser {
   id: string;
@@ -19,6 +20,9 @@ const Users = () => {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [isAdding, setIsAdding] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [adminToDelete, setAdminToDelete] = useState<{ id: string, email: string } | null>(null);
+  const [deleteLoading, setDeleteLoading] = useState(false);
 
   useEffect(() => {
     fetchAdmins();
@@ -73,21 +77,30 @@ const Users = () => {
     }
   };
 
-  const handleDeleteAdmin = async (id: string, email: string) => {
+  const handleDeleteAdmin = async () => {
+    if (!adminToDelete) return;
+    
+    setDeleteLoading(true);
+    try {
+      await deleteDoc(doc(db, 'admins', adminToDelete.id));
+      setSuccess('Admin removed successfully.');
+      setIsDeleteModalOpen(false);
+      setAdminToDelete(null);
+      fetchAdmins();
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setDeleteLoading(false);
+    }
+  };
+
+  const confirmDelete = (id: string, email: string) => {
     if (email === 'abdulrehmanamr06@gmail.com') {
       setError('Cannot delete the bootstrap admin.');
       return;
     }
-
-    if (!window.confirm(`Are you sure you want to remove ${email} from admins?`)) return;
-
-    try {
-      await deleteDoc(doc(db, 'admins', id));
-      setSuccess('Admin removed successfully.');
-      fetchAdmins();
-    } catch (err: any) {
-      setError(err.message);
-    }
+    setAdminToDelete({ id, email });
+    setIsDeleteModalOpen(true);
   };
 
   if (loading) return <div className="animate-pulse space-y-8">
@@ -162,7 +175,7 @@ const Users = () => {
                       </td>
                       <td className="px-8 py-6 text-right">
                         <button
-                          onClick={() => handleDeleteAdmin(admin.id, admin.email)}
+                          onClick={() => confirmDelete(admin.id, admin.email)}
                           className="p-2 text-zinc-500 hover:text-rose-500 transition-colors"
                         >
                           <Trash2 size={18} />
@@ -229,6 +242,14 @@ const Users = () => {
           </div>
         </div>
       </div>
+      <DeleteModal
+        isOpen={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
+        onConfirm={handleDeleteAdmin}
+        title="Remove Admin"
+        message={`Are you sure you want to remove ${adminToDelete?.email} from admins? They will lose all access to the admin panel.`}
+        loading={deleteLoading}
+      />
     </div>
   );
 };

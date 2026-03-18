@@ -3,9 +3,11 @@ import { useSearchParams } from 'react-router-dom';
 import { doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore';
 import { db } from '../firebase';
 import { SiteConfig, HomeBlock } from '../types';
-import { Save, Globe, User, MessageSquare, Palette, Share2, Image as ImageIcon, Zap, Plus, Trash2, Quote, History, Layout as LayoutIcon, GripVertical, Eye, EyeOff, Phone, Mail, MapPin, Star } from 'lucide-react';
+import { Save, Globe, User, MessageSquare, Palette, Share2, Image as ImageIcon, Zap, Plus, Trash2, Quote, History, Layout as LayoutIcon, GripVertical, Eye, EyeOff, Phone, Mail, MapPin, Star, XCircle, CheckCircle2 } from 'lucide-react';
 import { useSite } from '../context/SiteContext';
 import { cn } from '../utils/cn';
+import DeleteModal from '../components/DeleteModal';
+import { motion, AnimatePresence } from 'motion/react';
 import {
   DndContext,
   closestCenter,
@@ -113,6 +115,18 @@ const AdminSiteConfig = () => {
   const [loading, setLoading] = useState(true);
   const [saveLoading, setSaveLoading] = useState(false);
   const [searchParams, setSearchParams] = useSearchParams();
+  const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
+  
+  // Delete Modal State
+  const [deleteModal, setDeleteModal] = useState<{
+    isOpen: boolean;
+    type: 'block' | 'skill' | 'timeline' | 'testimonial' | null;
+    index?: number;
+    id?: string;
+  }>({
+    isOpen: false,
+    type: null
+  });
   const activeTab = searchParams.get('tab') || 'general';
   
   const setActiveTab = (tab: string) => {
@@ -133,19 +147,27 @@ const AdminSiteConfig = () => {
     }
   }, [initialConfig]);
 
+  useEffect(() => {
+    if (message) {
+      const timer = setTimeout(() => setMessage(null), 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [message]);
+
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!config) return;
     setSaveLoading(true);
+    setMessage(null);
     try {
       await setDoc(doc(db, 'config', 'site'), {
         ...config,
         updatedAt: serverTimestamp(),
       });
-      alert('Settings saved successfully!');
+      setMessage({ type: 'success', text: 'Settings saved successfully!' });
     } catch (error) {
       console.error(error);
-      alert('Error saving settings.');
+      setMessage({ type: 'error', text: 'Error saving settings.' });
     } finally {
       setSaveLoading(false);
     }
@@ -180,14 +202,7 @@ const AdminSiteConfig = () => {
   };
 
   const removeBlock = (id: string) => {
-    if (!window.confirm('Are you sure you want to remove this section?')) return;
-    setConfig((prev) => {
-      if (!prev || !prev.homeBlocks) return prev;
-      return {
-        ...prev,
-        homeBlocks: prev.homeBlocks.filter((b) => b.id !== id),
-      };
-    });
+    setDeleteModal({ isOpen: true, type: 'block', id });
   };
 
   const addBlock = (type: any) => {
@@ -229,11 +244,7 @@ const AdminSiteConfig = () => {
   };
 
   const removeSkill = (index: number) => {
-    if (!config) return;
-    if (!window.confirm('Are you sure you want to remove this skill?')) return;
-    const newSkills = [...config.skills];
-    newSkills.splice(index, 1);
-    setConfig({ ...config, skills: newSkills });
+    setDeleteModal({ isOpen: true, type: 'skill', index });
   };
 
   const addTimelineItem = () => {
@@ -245,11 +256,7 @@ const AdminSiteConfig = () => {
   };
 
   const removeTimelineItem = (index: number) => {
-    if (!config) return;
-    if (!window.confirm('Are you sure you want to remove this timeline item?')) return;
-    const newTimeline = [...config.timeline];
-    newTimeline.splice(index, 1);
-    setConfig({ ...config, timeline: newTimeline });
+    setDeleteModal({ isOpen: true, type: 'timeline', index });
   };
 
   const addTestimonial = () => {
@@ -261,17 +268,61 @@ const AdminSiteConfig = () => {
   };
 
   const removeTestimonial = (index: number) => {
+    setDeleteModal({ isOpen: true, type: 'testimonial', index });
+  };
+
+  const confirmDelete = () => {
     if (!config) return;
-    if (!window.confirm('Are you sure you want to remove this testimonial?')) return;
-    const newTestimonials = [...config.testimonials];
-    newTestimonials.splice(index, 1);
-    setConfig({ ...config, testimonials: newTestimonials });
+    
+    if (deleteModal.type === 'block' && deleteModal.id) {
+      setConfig((prev) => {
+        if (!prev || !prev.homeBlocks) return prev;
+        return {
+          ...prev,
+          homeBlocks: prev.homeBlocks.filter((b) => b.id !== deleteModal.id),
+        };
+      });
+    } else if (deleteModal.type === 'skill' && deleteModal.index !== undefined) {
+      const newSkills = [...config.skills];
+      newSkills.splice(deleteModal.index, 1);
+      setConfig({ ...config, skills: newSkills });
+    } else if (deleteModal.type === 'timeline' && deleteModal.index !== undefined) {
+      const newTimeline = [...config.timeline];
+      newTimeline.splice(deleteModal.index, 1);
+      setConfig({ ...config, timeline: newTimeline });
+    } else if (deleteModal.type === 'testimonial' && deleteModal.index !== undefined) {
+      const newTestimonials = [...config.testimonials];
+      newTestimonials.splice(deleteModal.index, 1);
+      setConfig({ ...config, testimonials: newTestimonials });
+    }
+
+    setDeleteModal({ isOpen: false, type: null });
   };
 
   if (loading || !config) return <div className="animate-pulse h-96 bg-zinc-900 rounded-[40px]" />;
 
   return (
     <div className="space-y-8">
+      {/* Message Toast */}
+      <AnimatePresence>
+        {message && (
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            className={cn(
+              "fixed top-24 right-8 z-50 flex items-center gap-3 px-6 py-4 rounded-2xl shadow-2xl border backdrop-blur-xl",
+              message.type === 'success' 
+                ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-500" 
+                : "bg-rose-500/10 border-rose-500/20 text-rose-500"
+            )}
+          >
+            {message.type === 'success' ? <CheckCircle2 size={20} /> : <XCircle size={20} />}
+            <span className="font-bold">{message.text}</span>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       <div className="flex items-center justify-between bg-zinc-900/50 p-8 rounded-[40px] border border-white/5 backdrop-blur-xl">
         <div>
           <h1 className="text-4xl font-black tracking-tighter text-white">Admin Dashboard</h1>
@@ -1379,6 +1430,14 @@ const AdminSiteConfig = () => {
           </form>
         </div>
       </div>
+
+      <DeleteModal
+        isOpen={deleteModal.isOpen}
+        onClose={() => setDeleteModal({ isOpen: false, type: null })}
+        onConfirm={confirmDelete}
+        title={`Remove ${deleteModal.type}`}
+        message={`Are you sure you want to remove this ${deleteModal.type}? This action will be saved when you click "Save Changes".`}
+      />
     </div>
   );
 };

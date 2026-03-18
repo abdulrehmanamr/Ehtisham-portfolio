@@ -3,13 +3,17 @@ import { collection, getDocs, addDoc, updateDoc, deleteDoc, doc, query, orderBy,
 import { db } from '../firebase';
 import { Service } from '../types';
 import { Plus, Edit2, Trash2, X, Save, Zap, Palette, Image as ImageIcon, Share2, Rocket } from 'lucide-react';
+import DeleteModal from '../components/DeleteModal';
 
 const AdminServices = () => {
   const [services, setServices] = useState<Service[]>([]);
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [serviceToDelete, setServiceToDelete] = useState<string | null>(null);
   const [currentService, setCurrentService] = useState<Partial<Service> | null>(null);
   const [formLoading, setFormLoading] = useState(false);
+  const [deleteLoading, setDeleteLoading] = useState(false);
 
   useEffect(() => {
     fetchServices();
@@ -44,11 +48,24 @@ const AdminServices = () => {
     }
   };
 
-  const handleDelete = async (id: string) => {
-    if (window.confirm('Are you sure you want to delete this service?')) {
-      await deleteDoc(doc(db, 'services', id));
+  const handleDelete = async () => {
+    if (!serviceToDelete) return;
+    setDeleteLoading(true);
+    try {
+      await deleteDoc(doc(db, 'services', serviceToDelete));
+      setIsDeleteModalOpen(false);
+      setServiceToDelete(null);
       fetchServices();
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setDeleteLoading(false);
     }
+  };
+
+  const confirmDelete = (id: string) => {
+    setServiceToDelete(id);
+    setIsDeleteModalOpen(true);
   };
 
   const openModal = (service: Service | null = null) => {
@@ -93,7 +110,7 @@ const AdminServices = () => {
                   <button onClick={() => openModal(service)} className="p-2 text-zinc-400 hover:text-white transition-colors">
                     <Edit2 size={18} />
                   </button>
-                  <button onClick={() => handleDelete(service.id)} className="p-2 text-rose-500 hover:text-rose-400 transition-colors">
+                  <button onClick={() => confirmDelete(service.id)} className="p-2 text-rose-500 hover:text-rose-400 transition-colors">
                     <Trash2 size={18} />
                   </button>
                 </div>
@@ -179,6 +196,14 @@ const AdminServices = () => {
           </div>
         </div>
       )}
+      <DeleteModal
+        isOpen={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
+        onConfirm={handleDelete}
+        title="Delete Service"
+        message="Are you sure you want to delete this service? This action cannot be undone."
+        loading={deleteLoading}
+      />
     </div>
   );
 };

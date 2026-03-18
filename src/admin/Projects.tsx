@@ -3,13 +3,17 @@ import { collection, getDocs, addDoc, updateDoc, deleteDoc, doc, query, orderBy,
 import { db } from '../firebase';
 import { Project } from '../types';
 import { Plus, Edit2, Trash2, X, Save, Image as ImageIcon } from 'lucide-react';
+import DeleteModal from '../components/DeleteModal';
 
 const AdminProjects = () => {
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [projectToDelete, setProjectToDelete] = useState<string | null>(null);
   const [currentProject, setCurrentProject] = useState<Partial<Project> | null>(null);
   const [formLoading, setFormLoading] = useState(false);
+  const [deleteLoading, setDeleteLoading] = useState(false);
 
   useEffect(() => {
     fetchProjects();
@@ -49,11 +53,24 @@ const AdminProjects = () => {
     }
   };
 
-  const handleDelete = async (id: string) => {
-    if (window.confirm('Are you sure you want to delete this project?')) {
-      await deleteDoc(doc(db, 'projects', id));
+  const handleDelete = async () => {
+    if (!projectToDelete) return;
+    setDeleteLoading(true);
+    try {
+      await deleteDoc(doc(db, 'projects', projectToDelete));
+      setIsDeleteModalOpen(false);
+      setProjectToDelete(null);
       fetchProjects();
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setDeleteLoading(false);
     }
+  };
+
+  const confirmDelete = (id: string) => {
+    setProjectToDelete(id);
+    setIsDeleteModalOpen(true);
   };
 
   const openModal = (project: Project | null = null) => {
@@ -86,7 +103,7 @@ const AdminProjects = () => {
                 <button onClick={() => openModal(project)} className="p-3 bg-white text-black rounded-full hover:bg-violet-600 hover:text-white transition-all">
                   <Edit2 size={18} />
                 </button>
-                <button onClick={() => handleDelete(project.id)} className="p-3 bg-rose-600 text-white rounded-full hover:bg-rose-700 transition-all">
+                <button onClick={() => confirmDelete(project.id)} className="p-3 bg-rose-600 text-white rounded-full hover:bg-rose-700 transition-all">
                   <Trash2 size={18} />
                 </button>
               </div>
@@ -219,6 +236,14 @@ const AdminProjects = () => {
           </div>
         </div>
       )}
+      <DeleteModal
+        isOpen={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
+        onConfirm={handleDelete}
+        title="Delete Project"
+        message="Are you sure you want to delete this project? This action cannot be undone."
+        loading={deleteLoading}
+      />
     </div>
   );
 };

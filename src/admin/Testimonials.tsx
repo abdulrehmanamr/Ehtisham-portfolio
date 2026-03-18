@@ -1,13 +1,27 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useSite } from '../context/SiteContext';
-import { Plus, Trash2, Star, User, Image as ImageIcon, Save } from 'lucide-react';
+import { Plus, Trash2, Star, User, Image as ImageIcon, Save, CheckCircle2, XCircle } from 'lucide-react';
 import { doc, updateDoc } from 'firebase/firestore';
 import { db } from '../firebase';
 import { motion, AnimatePresence } from 'motion/react';
+import DeleteModal from '../components/DeleteModal';
+import { cn } from '../utils/cn';
 
 const AdminTestimonials = () => {
   const { config, setConfig } = useSite();
   const [saving, setSaving] = useState(false);
+  const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
+  const [deleteModal, setDeleteModal] = useState<{ isOpen: boolean, index: number | null }>({
+    isOpen: false,
+    index: null
+  });
+
+  useEffect(() => {
+    if (message) {
+      const timer = setTimeout(() => setMessage(null), 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [message]);
 
   const addTestimonial = () => {
     const newTestimonial = {
@@ -24,20 +38,27 @@ const AdminTestimonials = () => {
   };
 
   const removeTestimonial = (index: number) => {
+    setDeleteModal({ isOpen: true, index });
+  };
+
+  const confirmDelete = () => {
+    if (deleteModal.index === null) return;
     const newTestimonials = [...config.testimonials];
-    newTestimonials.splice(index, 1);
+    newTestimonials.splice(deleteModal.index, 1);
     setConfig({ ...config, testimonials: newTestimonials });
+    setDeleteModal({ isOpen: false, index: null });
   };
 
   const handleSave = async () => {
     setSaving(true);
+    setMessage(null);
     try {
       const siteRef = doc(db, 'config', 'site');
       await updateDoc(siteRef, { testimonials: config.testimonials });
-      alert('Testimonials updated successfully!');
+      setMessage({ type: 'success', text: 'Testimonials updated successfully!' });
     } catch (error) {
       console.error(error);
-      alert('Failed to update testimonials.');
+      setMessage({ type: 'error', text: 'Failed to update testimonials.' });
     } finally {
       setSaving(false);
     }
@@ -45,6 +66,26 @@ const AdminTestimonials = () => {
 
   return (
     <div className="space-y-10">
+      {/* Message Toast */}
+      <AnimatePresence>
+        {message && (
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            className={cn(
+              "fixed top-24 right-8 z-50 flex items-center gap-3 px-6 py-4 rounded-2xl shadow-2xl border backdrop-blur-xl",
+              message.type === 'success' 
+                ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-500" 
+                : "bg-rose-500/10 border-rose-500/20 text-rose-500"
+            )}
+          >
+            {message.type === 'success' ? <CheckCircle2 size={20} /> : <XCircle size={20} />}
+            <span className="font-bold">{message.text}</span>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div>
           <h1 className="text-3xl font-bold mb-2">Manage Testimonials</h1>
@@ -178,6 +219,14 @@ const AdminTestimonials = () => {
           </div>
         )}
       </div>
+
+      <DeleteModal
+        isOpen={deleteModal.isOpen}
+        onClose={() => setDeleteModal({ isOpen: false, index: null })}
+        onConfirm={confirmDelete}
+        title="Remove Testimonial"
+        message="Are you sure you want to remove this testimonial? This action will be saved when you click 'Save Changes'."
+      />
     </div>
   );
 };

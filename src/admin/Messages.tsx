@@ -5,11 +5,15 @@ import { Message } from '../types';
 import { Trash2, Mail, CheckCircle, Clock, User, Search, MessageSquare } from 'lucide-react';
 import { format } from 'date-fns';
 import { cn } from '../utils/cn';
+import DeleteModal from '../components/DeleteModal';
 
 const AdminMessages = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [messageToDelete, setMessageToDelete] = useState<string | null>(null);
+  const [deleteLoading, setDeleteLoading] = useState(false);
 
   useEffect(() => {
     fetchMessages();
@@ -27,11 +31,24 @@ const AdminMessages = () => {
     fetchMessages();
   };
 
-  const handleDelete = async (id: string) => {
-    if (window.confirm('Delete this message?')) {
-      await deleteDoc(doc(db, 'messages', id));
+  const handleDelete = async () => {
+    if (!messageToDelete) return;
+    setDeleteLoading(true);
+    try {
+      await deleteDoc(doc(db, 'messages', messageToDelete));
+      setIsDeleteModalOpen(false);
+      setMessageToDelete(null);
       fetchMessages();
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setDeleteLoading(false);
     }
+  };
+
+  const confirmDelete = (id: string) => {
+    setMessageToDelete(id);
+    setIsDeleteModalOpen(true);
   };
 
   const filteredMessages = messages.filter(m =>
@@ -109,7 +126,7 @@ const AdminMessages = () => {
                   <CheckCircle size={20} />
                 </button>
                 <button
-                  onClick={() => handleDelete(msg.id)}
+                  onClick={() => confirmDelete(msg.id)}
                   title="Delete message"
                   className="p-3 bg-rose-500/10 text-rose-500 rounded-xl hover:bg-rose-500/20 transition-all"
                 >
@@ -134,6 +151,14 @@ const AdminMessages = () => {
           </div>
         )}
       </div>
+      <DeleteModal
+        isOpen={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
+        onConfirm={handleDelete}
+        title="Delete Message"
+        message="Are you sure you want to delete this message? This action cannot be undone."
+        loading={deleteLoading}
+      />
     </div>
   );
 };
