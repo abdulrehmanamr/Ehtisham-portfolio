@@ -3,10 +3,11 @@ import { useSearchParams } from 'react-router-dom';
 import { doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore';
 import { db } from '../firebase';
 import { SiteConfig, HomeBlock } from '../types';
-import { Save, Globe, User, MessageSquare, Palette, Share2, Image as ImageIcon, Zap, Plus, Trash2, Quote, History, Layout as LayoutIcon, GripVertical, Eye, EyeOff, Phone, Mail, MapPin, Star, XCircle, CheckCircle2 } from 'lucide-react';
+import { Save, Globe, User, MessageSquare, Palette, Share2, Image as ImageIcon, Zap, Plus, Trash2, Quote, History, Layout as LayoutIcon, GripVertical, Eye, EyeOff, Phone, Mail, MapPin, Star, XCircle, CheckCircle2, Crop } from 'lucide-react';
 import { useSite } from '../context/SiteContext';
 import { cn } from '../utils/cn';
 import DeleteModal from '../components/DeleteModal';
+import ImageCropper from '../components/ImageCropper';
 import { motion, AnimatePresence } from 'motion/react';
 import {
   DndContext,
@@ -116,6 +117,17 @@ const AdminSiteConfig = () => {
   const [saveLoading, setSaveLoading] = useState(false);
   const [searchParams, setSearchParams] = useSearchParams();
   const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
+  const [cropperConfig, setCropperConfig] = useState<{
+    isOpen: boolean;
+    image: string;
+    aspect: number;
+    onComplete: (cropped: string) => void;
+  }>({
+    isOpen: false,
+    image: '',
+    aspect: 1,
+    onComplete: () => {}
+  });
   
   // Delete Modal State
   const [deleteModal, setDeleteModal] = useState<{
@@ -435,12 +447,32 @@ const AdminSiteConfig = () => {
                 <div className="space-y-2">
                   <label className="text-xs font-bold text-zinc-500 uppercase tracking-widest">Profile Image URL</label>
                   <div className="flex gap-6 items-start">
-                    <input
-                      type="text"
-                      value={config.profileImage}
-                      onChange={(e) => setConfig({ ...config, profileImage: e.target.value })}
-                      className="flex-1 bg-black border border-white/10 rounded-xl px-4 py-3 text-white focus:border-violet-500 outline-none"
-                    />
+                    <div className="flex-1 relative">
+                      <input
+                        type="text"
+                        value={config.profileImage}
+                        onChange={(e) => setConfig({ ...config, profileImage: e.target.value })}
+                        className="w-full bg-black border border-white/10 rounded-xl px-4 py-3 text-white focus:border-violet-500 outline-none pr-12"
+                      />
+                      {config.profileImage && (
+                        <button
+                          type="button"
+                          onClick={() => setCropperConfig({
+                            isOpen: true,
+                            image: config.profileImage,
+                            aspect: 1,
+                            onComplete: (cropped) => {
+                              setConfig({ ...config, profileImage: cropped });
+                              setCropperConfig(prev => ({ ...prev, isOpen: false }));
+                            }
+                          })}
+                          className="absolute right-2 top-1/2 -translate-y-1/2 p-2 text-zinc-400 hover:text-violet-500 transition-colors"
+                          title="Crop Image"
+                        >
+                          <Crop size={18} />
+                        </button>
+                      )}
+                    </div>
                     <div className="w-24 h-24 rounded-2xl bg-zinc-800 overflow-hidden border border-white/10 shrink-0">
                       <img src={config.profileImage} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
                     </div>
@@ -1048,13 +1080,33 @@ const AdminSiteConfig = () => {
                 <div className="space-y-2">
                   <label className="text-xs font-bold text-zinc-500 uppercase tracking-widest">About Page Image URL</label>
                   <div className="flex gap-6 items-start">
-                    <input
-                      type="text"
-                      value={config.aboutImage || ''}
-                      onChange={(e) => setConfig({ ...config, aboutImage: e.target.value })}
-                      className="flex-1 bg-black border border-white/10 rounded-xl px-4 py-3 text-white focus:border-violet-500 outline-none"
-                      placeholder="https://example.com/about.jpg"
-                    />
+                    <div className="flex-1 relative">
+                      <input
+                        type="text"
+                        value={config.aboutImage || ''}
+                        onChange={(e) => setConfig({ ...config, aboutImage: e.target.value })}
+                        className="w-full bg-black border border-white/10 rounded-xl px-4 py-3 text-white focus:border-violet-500 outline-none pr-12"
+                        placeholder="https://example.com/about.jpg"
+                      />
+                      {config.aboutImage && (
+                        <button
+                          type="button"
+                          onClick={() => setCropperConfig({
+                            isOpen: true,
+                            image: config.aboutImage!,
+                            aspect: 3 / 4,
+                            onComplete: (cropped) => {
+                              setConfig({ ...config, aboutImage: cropped });
+                              setCropperConfig(prev => ({ ...prev, isOpen: false }));
+                            }
+                          })}
+                          className="absolute right-2 top-1/2 -translate-y-1/2 p-2 text-zinc-400 hover:text-violet-500 transition-colors"
+                          title="Crop Image"
+                        >
+                          <Crop size={18} />
+                        </button>
+                      )}
+                    </div>
                     <div className="w-24 h-32 rounded-2xl bg-zinc-800 overflow-hidden border border-white/10 shrink-0">
                       <img src={config.aboutImage} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
                     </div>
@@ -1381,13 +1433,27 @@ const AdminSiteConfig = () => {
                     <div className="space-y-2">
                       <label className="text-xs font-bold text-zinc-500 uppercase tracking-widest">About Image URL</label>
                       <div className="flex gap-6 items-start">
-                        <input
-                          type="text"
-                          value={config.aboutImage || ''}
-                          onChange={(e) => setConfig({ ...config, aboutImage: e.target.value })}
-                          className="flex-1 bg-black border border-white/10 rounded-xl px-4 py-3 text-white focus:border-violet-500 outline-none"
-                          placeholder="https://..."
-                        />
+                        <div className="flex-1 space-y-2">
+                          <input
+                            type="text"
+                            value={config.aboutImage || ''}
+                            onChange={(e) => setConfig({ ...config, aboutImage: e.target.value })}
+                            className="w-full bg-black border border-white/10 rounded-xl px-4 py-3 text-white focus:border-violet-500 outline-none"
+                            placeholder="https://..."
+                          />
+                          <button
+                            onClick={() => setCropperConfig({
+                              isOpen: true,
+                              image: config.aboutImage || config.profileImage || '',
+                              aspect: 4/5,
+                              onComplete: (url) => setConfig({ ...config, aboutImage: url })
+                            })}
+                            className="flex items-center gap-2 text-xs font-bold text-violet-400 hover:text-violet-300 transition-colors"
+                          >
+                            <Crop size={14} />
+                            Crop Image
+                          </button>
+                        </div>
                         <div className="w-24 h-24 rounded-2xl bg-zinc-800 overflow-hidden border border-white/10 shrink-0">
                           <img src={config.aboutImage || config.profileImage} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
                         </div>
@@ -1438,6 +1504,15 @@ const AdminSiteConfig = () => {
         title={`Remove ${deleteModal.type}`}
         message={`Are you sure you want to remove this ${deleteModal.type}? This action will be saved when you click "Save Changes".`}
       />
+
+      {cropperConfig.isOpen && (
+        <ImageCropper
+          image={cropperConfig.image}
+          aspect={cropperConfig.aspect}
+          onCropComplete={cropperConfig.onComplete}
+          onCancel={() => setCropperConfig(prev => ({ ...prev, isOpen: false }))}
+        />
+      )}
     </div>
   );
 };

@@ -31,55 +31,16 @@ const AdminLogin = lazy(() => import('./admin/Login'));
 import { useSite } from './context/SiteContext';
 import { AnimatePresence, motion } from 'motion/react';
 
-const SiteLoadingWrapper = ({ children }: { children: React.ReactNode }) => {
-  const { loading } = useSite();
-  const [showLoader, setShowLoader] = useState(false);
-
-  useEffect(() => {
-    let timer: NodeJS.Timeout;
-    if (loading) {
-      // Small delay to avoid flickering on fast connections
-      timer = setTimeout(() => setShowLoader(true), 200);
-    } else {
-      setShowLoader(false);
-    }
-    return () => clearTimeout(timer);
-  }, [loading]);
-  
+const AppContent = ({ children }: { children: React.ReactNode }) => {
   return (
-    <AnimatePresence mode="wait">
-      {loading && showLoader ? (
-        <motion.div 
-          key="loader"
-          initial={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.3, ease: "easeInOut" }}
-          className="fixed inset-0 z-[9999] flex items-center justify-center bg-black"
-          style={{ willChange: "opacity" }}
-        >
-          <div className="flex flex-col items-center gap-6">
-            <div className="relative">
-              <div className="w-16 h-16 border-2 border-white/5 rounded-full" />
-              <div className="absolute inset-0 w-16 h-16 border-t-2 border-violet-500 rounded-full animate-spin" />
-            </div>
-            <div className="text-center">
-              <p className="text-white font-bold tracking-[0.2em] uppercase text-xs mb-2">Ehtisham Arshad</p>
-              <p className="text-zinc-500 text-[10px] uppercase tracking-widest animate-pulse">Loading Experience</p>
-            </div>
-          </div>
-        </motion.div>
-      ) : (
-        <motion.div
-          key="content"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.4, ease: "easeOut" }}
-          style={{ willChange: "opacity" }}
-        >
-          {children}
-        </motion.div>
-      )}
-    </AnimatePresence>
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.4, ease: "easeOut" }}
+      style={{ willChange: "opacity" }}
+    >
+      {children}
+    </motion.div>
   );
 };
 
@@ -97,7 +58,7 @@ export default function App() {
     <AuthProvider>
       <SiteProvider>
         <Router>
-          <SiteLoadingWrapper>
+          <AppContent>
             <Suspense fallback={null}>
               <Routes>
                 {/* Public Routes */}
@@ -133,7 +94,7 @@ export default function App() {
                 />
               </Routes>
             </Suspense>
-          </SiteLoadingWrapper>
+          </AppContent>
         </Router>
       </SiteProvider>
     </AuthProvider>

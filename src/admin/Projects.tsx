@@ -2,8 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { collection, getDocs, addDoc, updateDoc, deleteDoc, doc, query, orderBy, serverTimestamp } from 'firebase/firestore';
 import { db } from '../firebase';
 import { Project } from '../types';
-import { Plus, Edit2, Trash2, X, Save, Image as ImageIcon } from 'lucide-react';
+import { Plus, Edit2, Trash2, X, Save, Image as ImageIcon, Crop } from 'lucide-react';
 import DeleteModal from '../components/DeleteModal';
+import ImageCropper from '../components/ImageCropper';
 
 const AdminProjects = () => {
   const [projects, setProjects] = useState<Project[]>([]);
@@ -14,6 +15,7 @@ const AdminProjects = () => {
   const [currentProject, setCurrentProject] = useState<Partial<Project> | null>(null);
   const [formLoading, setFormLoading] = useState(false);
   const [deleteLoading, setDeleteLoading] = useState(false);
+  const [showCropper, setShowCropper] = useState(false);
 
   useEffect(() => {
     fetchProjects();
@@ -163,19 +165,43 @@ const AdminProjects = () => {
               <div className="space-y-2">
                 <label className="text-xs font-bold text-zinc-500 uppercase tracking-widest">Image URL</label>
                 <div className="flex gap-4">
-                  <input
-                    required
-                    type="text"
-                    value={currentProject?.imageUrl || ''}
-                    onChange={(e) => setCurrentProject({ ...currentProject, imageUrl: e.target.value })}
-                    className="flex-1 bg-black border border-white/10 rounded-xl px-4 py-3 text-white focus:border-violet-500 outline-none"
-                    placeholder="https://..."
-                  />
-                  <div className="w-12 h-12 rounded-xl bg-zinc-800 flex items-center justify-center overflow-hidden border border-white/10">
+                  <div className="flex-1 relative">
+                    <input
+                      required
+                      type="text"
+                      value={currentProject?.imageUrl || ''}
+                      onChange={(e) => setCurrentProject({ ...currentProject, imageUrl: e.target.value })}
+                      className="w-full bg-black border border-white/10 rounded-xl px-4 py-3 text-white focus:border-violet-500 outline-none pr-12"
+                      placeholder="https://..."
+                    />
+                    {currentProject?.imageUrl && (
+                      <button
+                        type="button"
+                        onClick={() => setShowCropper(true)}
+                        className="absolute right-2 top-1/2 -translate-y-1/2 p-2 text-zinc-400 hover:text-violet-500 transition-colors"
+                        title="Crop Image"
+                      >
+                        <Crop size={18} />
+                      </button>
+                    )}
+                  </div>
+                  <div className="w-12 h-12 rounded-xl bg-zinc-800 flex items-center justify-center overflow-hidden border border-white/10 shrink-0">
                     {currentProject?.imageUrl ? <img src={currentProject.imageUrl} className="w-full h-full object-cover" referrerPolicy="no-referrer" /> : <ImageIcon className="text-zinc-600" />}
                   </div>
                 </div>
               </div>
+
+              {showCropper && currentProject?.imageUrl && (
+                <ImageCropper
+                  image={currentProject.imageUrl}
+                  onCropComplete={(croppedImage) => {
+                    setCurrentProject({ ...currentProject, imageUrl: croppedImage });
+                    setShowCropper(false);
+                  }}
+                  onCancel={() => setShowCropper(false)}
+                  aspect={16 / 9}
+                />
+              )}
 
               <div className="space-y-2">
                 <label className="text-xs font-bold text-zinc-500 uppercase tracking-widest">Description</label>
