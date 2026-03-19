@@ -25,6 +25,7 @@ const defaultConfig: SiteConfig = {
   profileImage: 'https://picsum.photos/seed/ehtisham/400/400',
   aboutImage: 'https://picsum.photos/seed/ehtisham/800/1000',
   logoUrl: '',
+  faviconUrl: 'https://picsum.photos/seed/favicon/32/32',
   seo: {
     title: 'Ehtisham Arshad | Professional Thumbnail Designer',
     description: 'Expert thumbnail designer helping YouTubers and creators boost their CTR and views with high-impact, viral designs.',

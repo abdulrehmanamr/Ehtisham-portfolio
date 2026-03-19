@@ -31,8 +31,10 @@ const SEOConfig = () => {
 
     try {
       const configRef = doc(db, 'config', 'site');
-      await updateDoc(configRef, { seo });
-      setConfig(prev => prev ? { ...prev, seo } : null);
+      await updateDoc(configRef, { 
+        seo,
+        faviconUrl: config?.faviconUrl || ''
+      });
       setSuccess(true);
       setTimeout(() => setSuccess(false), 3000);
     } catch (err) {
@@ -125,6 +127,24 @@ const SEOConfig = () => {
                   className="w-full bg-black border border-white/10 rounded-xl px-4 py-3 text-white focus:border-violet-500 outline-none transition-all"
                   placeholder="e.g. design, thumbnails, youtube, viral"
                 />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-zinc-400 mb-2">Favicon URL</label>
+                <div className="flex gap-4 items-start">
+                  <input
+                    type="text"
+                    value={config?.faviconUrl || ''}
+                    onChange={(e) => setConfig(prev => prev ? { ...prev, faviconUrl: e.target.value } : null)}
+                    className="flex-1 bg-black border border-white/10 rounded-xl px-4 py-3 text-white focus:border-violet-500 outline-none transition-all"
+                    placeholder="https://..."
+                  />
+                  {config?.faviconUrl && (
+                    <div className="w-12 h-12 rounded-xl bg-zinc-800 flex items-center justify-center border border-white/10 shrink-0">
+                      <img src={config.faviconUrl} alt="Favicon" className="w-8 h-8 object-contain" referrerPolicy="no-referrer" />
+                    </div>
+                  )}
+                </div>
+                <p className="text-[10px] text-zinc-500 mt-2 uppercase tracking-widest">Recommended: 32x32 or 64x64 PNG/ICO</p>
               </div>
             </div>
           </div>

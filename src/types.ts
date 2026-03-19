@@ -21,6 +21,7 @@ export interface SiteConfig {
   profileImage: string;
   aboutImage?: string;
   logoUrl?: string;
+  faviconUrl?: string;
   seo?: SEOConfig;
   socialLinks: {
     behance?: string;
