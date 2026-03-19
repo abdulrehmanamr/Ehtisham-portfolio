@@ -156,6 +156,10 @@ export const SiteProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setConfig(defaultConfig);
       }
       setLoading(false);
+    }, (error) => {
+      console.error("Error fetching site config:", error);
+      setConfig(defaultConfig);
+      setLoading(false);
     });
 
     return () => unsubscribe();
