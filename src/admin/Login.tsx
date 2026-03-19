@@ -140,7 +140,21 @@ const AdminLogin = () => {
               </div>
               Continue with Google
             </button>
-            {/* Email login hidden as per request for "only abdulrehmanamr06@gmail.com account sign in with google" */}
+            <div className="relative py-4">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-white/5"></div>
+              </div>
+              <div className="relative flex justify-center text-xs uppercase">
+                <span className="bg-zinc-900 px-2 text-zinc-500 font-bold tracking-widest">Or</span>
+              </div>
+            </div>
+            <button
+              onClick={() => setIsEmailLogin(true)}
+              className="w-full py-4 bg-zinc-800 text-white font-bold rounded-2xl border border-white/5 hover:bg-zinc-700 transition-all flex items-center justify-center gap-3 shadow-xl"
+            >
+              <LogIn size={20} />
+              Sign in with Email
+            </button>
           </div>
         )}
 
