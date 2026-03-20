@@ -118,7 +118,7 @@ const Home = () => {
                         transition={{ delay: 0.2 }}
                         className="text-zinc-400 text-lg md:text-xl max-w-xl mb-10 leading-relaxed"
                       >
-                        {config?.pageContent?.home?.heroSubtitle || `Hi, I'm ${config?.name || 'Ehtisham'}. A professional thumbnail designer helping you boost CTR and engagement with high-impact designs.`}
+                        {config?.pageContent?.home?.heroSubtitle || `Hi, I'm ${config?.name || 'Ehtisham Arshad'}. A professional thumbnail designer helping you boost CTR and engagement with high-impact designs.`}
                       </motion.p>
 
                       <motion.div
@@ -164,7 +164,7 @@ const Home = () => {
                         <div className="relative z-10 w-full h-full rounded-[40px] overflow-hidden border border-white/10 shadow-2xl">
                           <img
                             src={config?.profileImage || 'https://picsum.photos/seed/ehtisham/800/800'}
-                            alt={config?.name || "Ehtisham"}
+                            alt={config?.name || "Ehtisham Arshad"}
                             // @ts-ignore
                             fetchPriority="high"
                             className="w-full h-full object-cover transition-transform duration-500"

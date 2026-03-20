@@ -72,6 +72,31 @@ const SEO: React.FC<SEOProps> = ({ page }) => {
       favicon.setAttribute('href', config.faviconUrl);
     }
 
+    // JSON-LD Structured Data
+    const structuredData = {
+      "@context": "https://schema.org",
+      "@type": "Person",
+      "name": "Ehtisham Arshad",
+      "url": "https://ehtishamarshad.online",
+      "jobTitle": "Professional Thumbnail Designer",
+      "description": seo.description,
+      "sameAs": [
+        config.socialLinks.behance,
+        config.socialLinks.instagram,
+        config.socialLinks.twitter,
+        config.socialLinks.linkedin,
+        config.socialLinks.fiverr
+      ].filter(Boolean)
+    };
+
+    let script = document.querySelector('script[type="application/ld+json"]');
+    if (!script) {
+      script = document.createElement('script');
+      script.setAttribute('type', 'application/ld+json');
+      document.head.appendChild(script);
+    }
+    script.textContent = JSON.stringify(structuredData);
+
   }, [config, page, location]);
 
   return null;

@@ -16,7 +16,7 @@ const SiteContext = createContext<SiteContextType>({
 });
 
 const defaultConfig: SiteConfig = {
-  name: 'Ehtisham',
+  name: 'Ehtisham Arshad',
   title: 'Thumbnail Designer',
   bio: 'I am a skilled thumbnail designer with a talent for crafting eye-catching visuals...',
   location: 'Lahore, Pakistan',
@@ -27,15 +27,15 @@ const defaultConfig: SiteConfig = {
   logoUrl: '',
   faviconUrl: 'https://picsum.photos/seed/favicon/32/32',
   seo: {
-    title: 'Ehtisham',
-    description: 'Expert thumbnail designer helping YouTubers and creators boost their CTR and views with high-impact, viral designs.',
-    keywords: 'thumbnail designer, youtube thumbnails, graphic design, CTR optimization, viral thumbnails',
+    title: 'Ehtisham Arshad',
+    description: 'Ehtisham Arshad is an expert thumbnail designer helping YouTubers and creators boost their CTR and views with high-impact, viral designs.',
+    keywords: 'Ehtisham Arshad, thumbnail designer, youtube thumbnails, graphic design, CTR optimization, viral thumbnails',
     pages: {
-      home: { title: 'Home', description: 'Welcome to Ehtisham Portfolio' },
-      about: { title: 'About Me', description: 'Learn more about my journey and expertise' },
-      projects: { title: 'Portfolio', description: 'Explore my best thumbnail designs' },
-      services: { title: 'Services', description: 'Professional design services for creators' },
-      contact: { title: 'Contact', description: 'Get in touch for your next project' }
+      home: { title: 'Home', description: 'Welcome to Ehtisham Arshad Portfolio' },
+      about: { title: 'About Me', description: 'Learn more about Ehtisham Arshad journey and expertise' },
+      projects: { title: 'Portfolio', description: 'Explore Ehtisham Arshad best thumbnail designs' },
+      services: { title: 'Services', description: 'Professional design services by Ehtisham Arshad' },
+      contact: { title: 'Contact', description: 'Get in touch with Ehtisham Arshad for your next project' }
     }
   },
   socialLinks: {
