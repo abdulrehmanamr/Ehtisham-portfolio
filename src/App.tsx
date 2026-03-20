@@ -30,17 +30,25 @@ const AdminLogin = lazy(() => import('./admin/Login'));
 
 import { useSite } from './context/SiteContext';
 import { AnimatePresence, motion } from 'motion/react';
+import LoadingScreen from './components/LoadingScreen';
 
 const AppContent = ({ children }: { children: React.ReactNode }) => {
+  const { loading } = useSite();
+
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.4, ease: "easeOut" }}
-      style={{ willChange: "opacity" }}
-    >
-      {children}
-    </motion.div>
+    <>
+      <AnimatePresence mode="wait">
+        {loading && <LoadingScreen key="loading" />}
+      </AnimatePresence>
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.4, ease: "easeOut" }}
+        style={{ willChange: "opacity" }}
+      >
+        {children}
+      </motion.div>
+    </>
   );
 };
 

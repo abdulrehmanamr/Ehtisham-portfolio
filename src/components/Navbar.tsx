@@ -41,7 +41,7 @@ const Navbar = () => {
               {(config?.name || 'EA').split(' ').map(n => n[0]).join('').toUpperCase()}
             </div>
           )}
-          <span className="hidden sm:block">{config?.name || 'Ehtisham Arshad'}</span>
+          <span className="hidden sm:block">{config?.name || 'Ehtisham'}</span>
         </Link>
 
         {/* Desktop Nav */}

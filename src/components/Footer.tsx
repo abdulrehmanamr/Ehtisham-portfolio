@@ -11,7 +11,7 @@ const Footer = () => {
       <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
         <div className="col-span-1 md:col-span-2">
           <Link to="/" className="text-2xl font-bold tracking-tighter text-white mb-6 block">
-            {config?.name || 'Ehtisham Arshad'}
+            {config?.name || 'Ehtisham'}
           </Link>
           <p className="text-zinc-400 max-w-sm mb-8">
             Professional thumbnail designer dedicated to creating high-impact visuals that drive engagement and growth for content creators.
@@ -71,7 +71,7 @@ const Footer = () => {
 
       <div className="max-w-7xl mx-auto pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-4">
         <p className="text-zinc-500 text-sm text-center md:text-left">
-          © {new Date().getFullYear()} {config?.name || 'Ehtisham Arshad'}. All rights reserved.
+          © {new Date().getFullYear()} {config?.name || 'Ehtisham'}. All rights reserved.
         </p>
         <div className="flex gap-6 text-sm text-zinc-500">
           <Link to="/admin" className="hover:text-violet-400 transition-colors">Admin</Link>
