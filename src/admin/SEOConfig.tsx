@@ -129,6 +129,17 @@ const SEOConfig = () => {
                 />
               </div>
               <div>
+                <label className="block text-sm font-medium text-zinc-400 mb-2">Social Share Image (OG Image) URL</label>
+                <input
+                  type="text"
+                  value={seo.ogImage || ''}
+                  onChange={(e) => updateGlobal('ogImage', e.target.value)}
+                  className="w-full bg-black border border-white/10 rounded-xl px-4 py-3 text-white focus:border-violet-500 outline-none transition-all"
+                  placeholder="https://..."
+                />
+                <p className="text-[10px] text-zinc-500 mt-2 uppercase tracking-widest">Recommended: 1200x630 pixels</p>
+              </div>
+              <div>
                 <label className="block text-sm font-medium text-zinc-400 mb-2">Favicon URL</label>
                 <div className="flex gap-4 items-start">
                   <input

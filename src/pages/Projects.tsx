@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import Layout from '../components/Layout';
+import SEO from '../components/SEO';
 import { useSite } from '../context/SiteContext';
 import { collection, getDocs, orderBy, query } from 'firebase/firestore';
 import { db } from '../firebase';
@@ -29,6 +30,13 @@ const Projects = () => {
 
   return (
     <Layout>
+      <SEO 
+        page="projects"
+        projects={projects}
+        title={config?.seo?.projects?.title || 'My Portfolio'} 
+        description={config?.seo?.projects?.description || config?.seo?.description}
+        keywords={config?.seo?.projects?.keywords || config?.seo?.keywords}
+      />
       <section 
         className="pt-32 pb-20 px-6"
         style={{ backgroundColor: config?.theme?.sectionColors?.projects || undefined }}
@@ -95,7 +103,7 @@ const Projects = () => {
                     <div className="relative aspect-video rounded-[32px] overflow-hidden border border-white/10 mb-4">
                       <img
                         src={project.imageUrl}
-                        alt={project.title}
+                        alt={`${project.title} - Thumbnail Design by Ehtisham Arshad`}
                         loading="lazy"
                         className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                         referrerPolicy="no-referrer"
@@ -141,7 +149,7 @@ const Projects = () => {
               <div className="aspect-video w-full">
                 <img
                   src={selectedProject.imageUrl}
-                  alt={selectedProject.title}
+                  alt={`${selectedProject.title} - Thumbnail Design by Ehtisham Arshad`}
                   className="w-full h-full object-cover"
                   referrerPolicy="no-referrer"
                 />

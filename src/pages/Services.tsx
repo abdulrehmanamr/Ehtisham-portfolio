@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { motion } from 'motion/react';
 import Layout from '../components/Layout';
+import SEO from '../components/SEO';
 import { collection, getDocs, orderBy, query } from 'firebase/firestore';
 import { db } from '../firebase';
 import { Service } from '../types';
@@ -37,6 +38,11 @@ const Services = () => {
 
   return (
     <Layout>
+      <SEO 
+        title={config?.seo?.services?.title || 'My Services'} 
+        description={config?.seo?.services?.description || config?.seo?.description}
+        keywords={config?.seo?.services?.keywords || config?.seo?.keywords}
+      />
       <section 
         className="pt-32 pb-20 px-6"
         style={{ backgroundColor: config?.theme?.sectionColors?.services || undefined }}

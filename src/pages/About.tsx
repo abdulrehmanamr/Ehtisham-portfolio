@@ -1,6 +1,7 @@
 import React from 'react';
 import { motion } from 'motion/react';
 import Layout from '../components/Layout';
+import SEO from '../components/SEO';
 import { useSite } from '../context/SiteContext';
 import { Calendar, MapPin, Briefcase, GraduationCap, Award } from 'lucide-react';
 
@@ -9,6 +10,11 @@ const About = () => {
 
   return (
     <Layout>
+      <SEO 
+        title={config?.seo?.about?.title || 'About Me'} 
+        description={config?.seo?.about?.description || config?.seo?.description}
+        keywords={config?.seo?.about?.keywords || config?.seo?.keywords}
+      />
       <section 
         className="pt-32 pb-20 px-6"
         style={{ backgroundColor: config?.theme?.sectionColors?.about || undefined }}
@@ -23,7 +29,7 @@ const About = () => {
               <div className="aspect-[4/5] rounded-[48px] overflow-hidden border border-white/10 shadow-2xl bg-zinc-900">
                 <img
                   src={config?.aboutImage || config?.profileImage || 'https://picsum.photos/seed/ehtisham/800/1000'}
-                  alt="About Ehtisham"
+                  alt={`About Ehtisham Arshad - Professional Thumbnail Designer`}
                   loading="lazy"
                   className="w-full h-full object-cover transition-transform duration-500 about-image-scale"
                   referrerPolicy="no-referrer"

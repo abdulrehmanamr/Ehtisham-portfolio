@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { motion } from 'motion/react';
 import Layout from '../components/Layout';
+import SEO from '../components/SEO';
 import { useSite } from '../context/SiteContext';
 import { Mail, Phone, MapPin, Send, MessageSquare, Instagram, Twitter, Linkedin } from 'lucide-react';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
@@ -30,6 +31,11 @@ const Contact = () => {
 
   return (
     <Layout>
+      <SEO 
+        title={config?.seo?.contact?.title || 'Contact Me'} 
+        description={config?.seo?.contact?.description || config?.seo?.description}
+        keywords={config?.seo?.contact?.keywords || config?.seo?.keywords}
+      />
       <section 
         className="pt-32 pb-20 px-6"
         style={{ backgroundColor: config?.theme?.sectionColors?.contact || undefined }}

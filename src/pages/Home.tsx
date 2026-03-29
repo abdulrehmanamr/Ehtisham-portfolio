@@ -3,6 +3,7 @@ import { motion } from 'motion/react';
 import { ArrowRight, CheckCircle2, Star, Play, ExternalLink } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import Layout from '../components/Layout';
+import SEO from '../components/SEO';
 import { useSite } from '../context/SiteContext';
 import { cn } from '../utils/cn';
 import { collection, query, where, limit, getDocs, orderBy, addDoc, serverTimestamp } from 'firebase/firestore';
@@ -77,6 +78,11 @@ const Home = () => {
 
   return (
     <Layout>
+      <SEO 
+        title={config?.seo?.home?.title || 'Professional Thumbnail Designer'} 
+        description={config?.seo?.home?.description || config?.seo?.description}
+        keywords={config?.seo?.home?.keywords || config?.seo?.keywords}
+      />
       {config?.homeBlocks?.filter(b => b.enabled).map((block) => {
         switch (block.type) {
           case 'hero':
@@ -164,7 +170,7 @@ const Home = () => {
                         <div className="relative z-10 w-full h-full rounded-[40px] overflow-hidden border border-white/10 shadow-2xl">
                           <img
                             src={config?.profileImage || 'https://picsum.photos/seed/ehtisham/800/800'}
-                            alt={config?.name || "Ehtisham Arshad"}
+                            alt={`Ehtisham Arshad - Professional Thumbnail Designer`}
                             // @ts-ignore
                             fetchPriority="high"
                             className="w-full h-full object-cover transition-transform duration-500"
@@ -210,7 +216,7 @@ const Home = () => {
                       <div className="aspect-[4/5] rounded-[40px] overflow-hidden border border-white/10 shadow-2xl bg-zinc-900">
                         <img
                           src={config?.aboutImage || config?.profileImage || 'https://picsum.photos/seed/ehtisham/800/1000'}
-                          alt="About"
+                          alt={`About Ehtisham Arshad - Thumbnail Design Expert`}
                           loading="lazy"
                           className="w-full h-full object-cover"
                           referrerPolicy="no-referrer"
@@ -351,17 +357,17 @@ const Home = () => {
 
                   <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 md:gap-6">
                     {(config?.skills || []).slice(0, 3).map((skill, i) => (
-                      <motion.div
-                        key={skill.name}
-                        initial={{ opacity: 0, y: 20 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        viewport={{ once: true }}
-                        transition={{ delay: i * 0.1 }}
-                        className="p-4 md:p-8 bg-zinc-900 border border-white/5 rounded-[24px] md:rounded-[32px] flex flex-col items-center text-center group hover:border-violet-500/30 transition-all"
-                      >
-                        <img src={skill.icon} alt={skill.name} loading="lazy" className="w-10 h-10 md:w-16 md:h-16 mb-4 md:mb-6 transition-all duration-500" />
-                        <h3 className="text-sm md:text-xl font-bold mb-1 md:mb-2">{skill.name}</h3>
-                      </motion.div>
+                        <motion.div
+                          key={skill.name}
+                          initial={{ opacity: 0, y: 20 }}
+                          whileInView={{ opacity: 1, y: 0 }}
+                          viewport={{ once: true }}
+                          transition={{ delay: i * 0.1 }}
+                          className="p-4 md:p-8 bg-zinc-900 border border-white/5 rounded-[24px] md:rounded-[32px] flex flex-col items-center text-center group hover:border-violet-500/30 transition-all"
+                        >
+                          <img src={skill.icon} alt={`${skill.name} icon - Ehtisham Arshad Skills`} loading="lazy" className="w-10 h-10 md:w-16 md:h-16 mb-4 md:mb-6 transition-all duration-500" />
+                          <h3 className="text-sm md:text-xl font-bold mb-1 md:mb-2">{skill.name}</h3>
+                        </motion.div>
                     ))}
                   </div>
                 </div>
@@ -403,7 +409,7 @@ const Home = () => {
                           <div className="relative aspect-video rounded-[32px] overflow-hidden border border-white/10 mb-6 bg-zinc-900">
                             <img
                               src={project.imageUrl}
-                              alt={project.title}
+                              alt={`${project.title} - Thumbnail Design by Ehtisham Arshad`}
                               loading="lazy"
                               className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                               referrerPolicy="no-referrer"
@@ -484,7 +490,7 @@ const Home = () => {
                           </div>
                           <p className="text-zinc-300 italic mb-8 leading-relaxed">"{t.content}"</p>
                           <div className="flex items-center gap-4">
-                            <img src={t.avatarUrl || `https://api.dicebear.com/7.x/avataaars/svg?seed=${t.name}`} alt={t.name} loading="lazy" className="w-12 h-12 rounded-full border border-white/10" />
+                            <img src={t.avatarUrl || `https://api.dicebear.com/7.x/avataaars/svg?seed=${t.name}`} alt={`Client ${t.name} - Ehtisham Arshad Testimonial`} loading="lazy" className="w-12 h-12 rounded-full border border-white/10" />
                             <div>
                               <h4 className="font-bold text-white">{t.name}</h4>
                               <p className="text-xs text-zinc-500">{t.role}</p>
